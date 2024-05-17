@@ -1,0 +1,24 @@
+<h2>Your Health Policies</h2>
+
+{% if health_policies %}
+<table>
+  <tr>
+    <th>Policy ID</th>
+    <th>Plan</th>
+    <th>Amount</th>
+    <th>Approval Status</th>
+    <th>Policy End Date</th>
+  </tr>
+  {% for policy in health_policies %}
+  <tr>
+    <td>{{ policy.id }}</td>
+    <td>{{ policy.health_plan }}</td>
+    <td>{{ policy.amount }}</td>
+    <td>{{ policy.approval|yesno:"Approved,Not Approved" }}</td>
+    <td>{{ policy.penddate }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No health policies found.</p>
+{% endif %}

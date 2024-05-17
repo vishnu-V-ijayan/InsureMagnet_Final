@@ -1,0 +1,86 @@
+{% block content %}
+<style>
+    body { font-family: Arial, sans-serif; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    tr:hover { background-color: #f1f1f1; }
+    form { margin-bottom: 20px; }
+    input[type="text"] { padding: 10px; margin-right: 10px; width: 300px; }
+    button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+    .pagination { list-style-type: none; padding: 0; text-align: center; }
+    .pagination li { display: inline; }
+    .pagination li a { color: black; float: left; padding: 8px 16px; text-decoration: none; }
+    .pagination li a.active { background-color: #4CAF50; color: white; border-radius: 5px; }
+    .pagination li a:hover:not(.active) { background-color: #ddd; border-radius: 5px; }
+</style>
+
+<h2>Claim Requests</h2>
+
+<form method="get" action="">
+    <input type="text" name="q" placeholder="Search claims..." value="{{ request.GET.q }}">
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Policy ID</th>
+            <th>Policy Type</th>
+            <th>Claim Amount</th>
+            <th>Claim Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for claim in claims %}
+        <tr>
+            <td>{{ claim.id }}</td>
+            <td>{{ claim.health_policy_id|default_if_none:claim.vehicle_policy_id }}</td>
+            <td>
+                {% if claim.health_policy_id %}
+                    Health Insurance
+                {% elif claim.vehicle_policy_id %}
+                    Vehicle Insurance
+                {% else %}
+                    Unknown
+                {% endif %}
+            </td>
+            <td>{{ claim.claim_amount }}</td>
+            <td>{{ claim.claim_date }}</td>
+            <td>{{ claim.approvals.last.approval_status|default:"Pending" }}</td>
+            <td>
+                <a href="{% url "claim-verify" claim.id %}">Verify</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No claims found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if claims.has_other_pages %}
+  <ul class="pagination">
+    {% if claims.has_previous %}
+      <li><a href="?page={{ claims.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Previous</a></li>
+    {% endif %}
+    {% for num in claims.paginator.page_range %}
+      {% if claims.number == num %}
+        <li class="current">{{ num }}</li>
+      {% else %}
+        <li><a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if claims.has_next %}
+      <li><a href="?page={{ claims.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next</a></li>
+    {% endif %}
+  </ul>
+{% endif %}
+
+{% endblock %}

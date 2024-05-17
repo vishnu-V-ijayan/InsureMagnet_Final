@@ -1,0 +1,129 @@
+{% comment %} {% extends "customer_base.html" %} {% endcomment %}
+
+{% block style %}
+    {% comment %} <link rel="stylesheet" href="{% static 'css/style.css' %}"> {% endcomment %}
+
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+        .column {
+            flex: 1 1 33%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-center {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .column {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+{% endblock style %}
+{% block body %}
+<body>
+    <div class="container">
+        <div class="column">
+            <h2>Policy Details</h2>
+            <p><strong>Policy Name:</strong> {{ policy.health_plan.ptype }}</p>
+            <p><strong>Premium Amount:</strong> ${{ policy.amount }}</p>
+        </div>
+        <div class="column">
+            <h2>Health Policy Information</h2>
+            <table>
+                <tr><th>Policy Number</th><td>{{ policy.id }}</td></tr>
+                <tr><th>Customer</th><td>{{ policy.customer }}</td></tr>
+                <tr><th>Number of Persons Covered</th><td>{{ policy.npersons }}</td></tr>
+                <tr><th>Approval Status</th><td>{{ policy.approval|yesno:"Approved,Not Approved" }}</td></tr>
+                <tr><th>Application Date</th><td>{{ policy.appldate }}</td></tr>
+                <tr><th>End Date</th><td>{{ policy.penddate }}</td></tr>
+            </table>
+            <div class="button-center">
+                
+                <button class="btn" id="pay-btn">Proceed to Payment</button>
+            </div>
+        </div>
+        <div class="column">
+            <h2>Members Covered</h2>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Gender</th>
+                    <th>Weight (kg)</th>
+                    <th>Height (m)</th>
+                </tr>
+                {% for member in members %}
+                <tr>
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.dob }}</td>
+                    <td>{{ member.gender }}</td>
+                    <td>{{ member.weight }}</td>
+                    <td>{{ member.height }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    var options = {
+       
+      // Enter the Key ID generated from the Dashboard
+      key: "{{ razorpay_merchant_key }}", 
+       
+      // Amount is in currency subunits.
+      // Default currency is INR. Hence, 
+      // 50000 refers to 50000 paise
+      amount: "{{ razorpay_amount }}", 
+      currency: "{{ currency }}",
+       
+      // Your/store name.
+      name: "Dj Razorpay", 
+       
+      // Pass the `id` obtained in the response of Step 1
+      order_id: "{{ razorpay_order_id }}", 
+      callback_url: "{{ callback_url }}",
+    };
+     
+    // initialise razorpay with the options.
+    var rzp1 = new Razorpay(options);
+     
+    // add event listener to the payment button.
+    document.getElementById("pay-btn").onclick = function (e) {
+      rzp1.open();
+      e.preventDefault();
+    };
+  </script>
+</body>
+{% endblock body %}

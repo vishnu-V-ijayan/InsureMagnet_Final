@@ -1,0 +1,46 @@
+{% extends "customer_base.html" %}
+
+{% block style %}
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
+    </style>
+{% endblock style %}
+{% block body %}
+<body>
+    <h2>My Health Claims</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Claim Amount</th>
+                <th>Approval Status</th>
+                <th>Approved Amount</th>
+                <th>Approval Date</th>
+                <th>Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for claim, approval in claims_with_latest_approval %}
+            <tr>
+                <td>{{ claim.id }}</td>
+                <td>{{ claim.claim_amount }}</td>
+                <td>{{ approval.approval_status|default_if_none:"Pending" }}</td>
+                <td>{{ approval.approved_amount|default_if_none:"N/A" }}</td>
+                <td>{{ approval.approval_date|default:"N/A" }}</td>
+                <td>{{ approval.comment|default_if_none:"N/A" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No health claims found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock body %}
+</html>

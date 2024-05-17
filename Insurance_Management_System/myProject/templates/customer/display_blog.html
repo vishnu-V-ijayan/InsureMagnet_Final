@@ -1,0 +1,93 @@
+
+{% extends 'customer_base.html' %}
+
+{%load static%}
+{% block body %}
+
+
+<div>
+   
+    <div style="padding: 5px;">
+
+      <!-- Container with two columns using Bootstrap -->
+      <div class="container">
+        <div class="row">
+          <!-- Column 1 with width 8 -->
+          <div class="col-md-8">
+            <div class="container">
+              <div class="row">
+                {% for blog_post in blog_posts %}
+                  <div class="col-md-4 mt-5 ">
+                    <!-- Content for column 1 goes here -->
+                    
+                    <p class="card-text">
+                      <i class="fas fa-thumbs-up"></i> Likes: {{ blog_post.like_set.count }}
+                    </p>
+                    <p class="card-text" >
+                      <i class="fas fa-eye"></i> Views: {{ blog_post.views }}
+                    </p>
+                    <p class="card-text">
+                      <i class="far fa-calendar-alt"></i> Posted on: {{ blog_post.created_at }}
+                    </p>
+                    <p class="card-text">
+                      <i class="fas fa-user"></i> Seller: {{ blog_post.seller.first_name }}
+                    </p>
+                  </div>
+                  <!-- Column 2 with width 4 -->
+                  <div class="col-md-8 mt-5">
+                    <!-- Your content for column 2 goes here -->
+                    <div class="card border-0">
+                      <img src="{{ blog_post.image.url }}" class="card-img-top" alt="{{ blog_post.heading }}" style="max-width: 800px; height: 300px;">
+                      <div class="card-body">
+                        <h2 class="card-title">{{ blog_post.heading }}</h2>
+                        <p class="card-text" style="color: grey; text-align: justify; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">
+                          {{ blog_post.description }}
+                      </p>
+                      
+                        <a href="{% url 'blog_post_detail' blog_post.id %}" class="btn btn-success">Read more</a>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2 with width 4 -->
+          <div class="col-md-4">
+            
+            <button type="button" class="btn btn-primary btn-block">Most Viewed</button>
+            
+         
+            <div style="padding: 5px;box-shadow: 5px 5px 10px #888888;">
+
+              {% for blog_post in top_three_posts %}  <!-- Your content for column 2 goes here -->
+                    
+
+                    <div class="card border-2 col-md-8 mt-5 ml-5">
+                      <img src="{{ blog_post.image.url }}" class="card-img-top" alt="{{ blog_post.heading }}" style="max-width: 100%; height: 100px;">
+                      <div class="card-body">
+                        <h6 class="card-title">{{ blog_post.heading }}</h6>
+                        <p class="card-title" style="color: grey;">{{ blog_post.created_at|timesince }} ago</p>
+
+                        <a href="{% url 'blog_post_detail' blog_post.id %}" class="btn btn-danger">Read more</a>
+                      </div>
+                    
+                  </div>
+                  {% endfor %}
+              </div>
+              
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script src="https://kit.fontawesome.com/0c1a238acd.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+{% endblock body %}
+

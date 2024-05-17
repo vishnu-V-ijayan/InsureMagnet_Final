@@ -1,0 +1,186 @@
+{% extends "customer_base.html" %}
+
+<!-- customer/health_register_claim_01.html -->
+{% block style %}
+<style>
+    .container {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+    .col-md-6 {
+        flex: 0 0 48%;
+        max-width: 48%;
+        box-sizing: border-box;
+        padding: 10px;
+    }
+    @media (max-width: 768px) {
+        .col-md-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+    }
+    .form-control:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+    .error {
+        color: red;
+        font-size: 0.8em;
+    }
+    .btn-primary:disabled {
+        background-color: #ccc;
+        border-color: #ccc;
+    }
+</style>
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+    <div class="col-md-6">
+            <h2>Policy Details</h2>
+            <p><strong>Policy No:</strong> {{ policy.id }}</p>
+            <p><strong>Vehicle Plan ID:</strong> {{ policy.vehicle_plan.id }}</p>
+            <p><strong>Office ID:</strong> OFF{{ policy.office_id }}</p>
+            <p><strong>Policy Amount:</strong> {{ policy.policy_amount }}</p>
+            <p><strong>Policy Start Date:</strong> {{ policy.policy_date }}</p>
+            <p><strong>Policy End Date:</strong> {{ policy.policy_end_date }}</p>
+            <p><strong>Customer:</strong> {{ policy.customer.first_name }}</p> <!-- Assuming Customer model has a 'name' field -->
+            {% comment %} <p><strong>Agent:</strong> {{ policy.agent.name if policy.agent else 'No agent assigned' }}</p> <!-- Assuming Agent model has a 'name' field --> {% endcomment %}
+            <p><strong>Vehicle Number:</strong> {{ policy.vehicle_number }}</p>
+            <p><strong>Engine Number:</strong> {{ policy.engine_number }}</p>
+            <p><strong>Chassis Number:</strong> {{ policy.chassis_number }}</p>
+            <p><strong>Vehicle Type:</strong> {{ policy.vehicle_type }}</p>
+            <p><strong>Manufacture Year:</strong> {{ policy.manufacture_year }}</p>
+            <p><strong>Vehicle Value:</strong> {{ policy.vehicle_value }}</p>
+    </div>
+    <div class="col-md-6">
+        <h2>Claim Form</h2>
+        <form id="claimForm" method="post" action="{% url "vehicle_register_claim_02" policy.id %}" enctype="multipart/form-data" onsubmit="return validateForm()">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="claim_amount">Claim Amount</label>
+                <input type="text" class="form-control" id="claim_amount" name="claim_amount" required>
+                <div class="error" id="claim_amount_error"></div>
+            </div>
+            <div class="form-group">
+                <label for="reports">Upload Reports ( .jpeg, .jpg, .png only)</label>
+                <input type="file" class="form-control" id="reports" name="reports" accept=".jpeg, .jpg, .png" required>
+                <div class="error" id="reports_error"></div>
+            </div>
+            <div class="form-group">
+                <label for="account_number">Account Number</label>
+                <input type="text" class="form-control" id="account_number" name="account_number" required>
+                <div class="error" id="account_number_error"></div>
+            </div>
+            <div class="form-group">
+                <label for="bank_name">Bank Name</label>
+                <select class="form-control" id="bank_name" name="bank_name" required>
+                    <option disabled selected value="">Select</option>
+                    <option>SBI</option>
+                    <option>HDFC Bank</option>
+                    <option>ICICI Bank</option>
+                    <option>Axis Bank</option>
+                    <option>Punjab National Bank</option>
+                </select>
+                <div class="error" id="bank_name_error"></div>
+            </div>
+            <div class="form-group">
+                <label for="ifsc_code">IFSC Code</label>
+                <input type="text" class="form-control" id="ifsc_code" name="ifsc_code" pattern="^[A-Z]{4}[0-9]{7}$" required>
+                <div class="error" id="ifsc_error"></div>
+            </div>
+            <button type="submit" class="btn btn-primary" disabled>Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function validateAccountNumber() {
+        const accountNumber = document.getElementById('account_number').value;
+        if (!accountNumber.match(/^\d{10,16}$/)) {
+            document.getElementById('account_number_error').textContent = 'Account number must be between 10 to 16 digits.';
+            return false;
+        } else {
+            document.getElementById('account_number_error').textContent = '';
+            return true;
+        }
+    }
+
+    function validateClaimAmount() {
+        const claimAmount = document.getElementById('claim_amount').value;
+        if (isNaN(claimAmount) || Number(claimAmount) <= 0) {
+            document.getElementById('claim_amount_error').textContent = 'Please enter a valid claim amount.';
+            return false;
+        } else {
+            document.getElementById('claim_amount_error').textContent = '';
+            return true;
+        }
+    }
+
+    function validateBankName() {
+        const bankName = document.getElementById('bank_name').value;
+        if (bankName === "") {
+            document.getElementById('bank_name_error').textContent = 'Please select a bank.';
+            return false;
+        } else {
+            document.getElementById('bank_name_error').textContent = '';
+            return true;
+        }
+    }
+
+    function validateReportFile() {
+        const reportFile = document.getElementById('reports').value;
+        const fileExtension = reportFile.split('.').pop().toLowerCase();
+        const validExtensions = [ 'jpeg', 'jpg', 'png'];
+        if (validExtensions.includes(fileExtension)) {
+            document.getElementById('reports_error').textContent = '';
+            return true;
+        } else {
+            document.getElementById('reports_error').textContent = 'Invalid file type. Only JPEG, and PNG files are allowed.';
+            return false;
+        }
+    }
+    
+
+    function validateForm() {
+        const validAccountNumber = validateAccountNumber();
+        const validClaimAmount = validateClaimAmount();
+        const validBankName = validateBankName();
+        const validReportFile = validateReportFile();
+        const ifsc = document.getElementById('ifsc_code').value;
+        const regex = /^[A-Z]{4}[0-9]{7}$/;
+        const validIFSC = regex.test(ifsc);
+    
+        document.getElementById('ifsc_error').textContent = validIFSC ? '' : 'Invalid IFSC Code. Format should be ABCD0123456.';
+    
+        const formValid = validAccountNumber && validClaimAmount && validBankName && validIFSC && validReportFile;
+        document.querySelector('button[type="submit"]').disabled = !formValid;
+        return formValid;
+    }
+    
+
+    document.getElementById('claimForm').addEventListener('input', validateForm);
+</script>
+{% endblock body %}

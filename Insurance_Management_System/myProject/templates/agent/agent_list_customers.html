@@ -1,0 +1,145 @@
+<!-- agent_list_customers.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+        }
+
+        h1 {
+            background: #005792;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        form {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #007BAA;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        td {
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                flex-direction: column;
+            }
+
+            input[type="text"] {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            table, th, td {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% block body %}
+    <h1>Customer List</h1>
+    <form method="get" action=".">
+        <input type="text" name="q" placeholder="Search customers..." value="{{ request.GET.q }}">
+        <button type="submit">Search</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Aadhaar</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.first_name }}</td>
+                <td>{{ customer.last_name }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.aadhaar }}</td>
+                <td>
+                    <!-- Form for Health Policy -->
+                    <form action="{% url 'agent_select_customer' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="customer_id" value="{{ customer.id }}">
+                        <button type="submit">Health Policy</button>
+                    </form>
+                    <!-- Form for Vehicle Policy -->
+                    <form action="{% url 'agent_select_customer_vehicle' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="customer_id" value="{{ customer.id }}">
+                        <button type="submit">Vehicle Policy</button>
+                    </form>
+                    
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No customers found</td>
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+    {% endblock body %}
+</body>
+</html>

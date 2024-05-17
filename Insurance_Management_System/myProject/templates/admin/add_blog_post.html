@@ -1,0 +1,108 @@
+{% extends "adminbase.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+{% block style %} 
+<style>
+    .blog-form {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      animation: fadeInUp 0.5s ease-in-out;
+    }
+
+    .blog-form label {
+      font-weight: bold;
+    }
+
+    .blog-form .form-group {
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  {% endblock style %}
+
+{% block body %}
+
+<div class="container mt-5 mb-5" style="box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); max-width: 700px;">
+  <h2 class="mb-4 text-center">Add Blog Post</h2>
+  <form method="post" enctype="multipart/form-data" class="needs-validation blog-form" novalidate>
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="{{ form.heading.id_for_label }}">Heading</label>
+      {{ form.heading }}
+      <div class="invalid-feedback">
+        {{ form.heading.errors.0|default:"Please provide a heading." }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="{{ form.description.id_for_label }}">Description</label>
+      {{ form.description }}
+      <div class="invalid-feedback">
+        {{ form.description.errors.0|default:"Please provide a description." }}
+      </div>
+      <small class="text-muted">Minimum length: 50 characters, Maximum length: 500 characters</small>
+    </div>
+    <div class="form-group">
+      <label for="{{ form.image.id_for_label }}">Image</label>
+      {{ form.image }}
+      <div class="invalid-feedback">
+        {{ form.image.errors.0|default:"Please select an image file." }}
+      </div>
+      <small class="text-muted">Accepted formats: JPG, JPEG, PNG, GIF</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Blog Post</button>
+  </form>
+</div>
+
+<script>
+  const form = document.querySelector('.needs-validation');
+
+  form.addEventListener('submit', function (event) {
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    form.classList.add('was-validated');
+  });
+
+  const descriptionField = document.getElementById('{{ form.description.id_for_label }}');
+const minLength = 50;
+const maxLength = 500;
+
+descriptionField.addEventListener('input', function() {
+  const descriptionValue = descriptionField.value.trim();
+  if (descriptionValue.length < minLength) {
+    descriptionField.setCustomValidity(`Description must be at least ${minLength} characters.`);
+  } else if (descriptionValue.length > maxLength) {
+    descriptionField.setCustomValidity(`Description cannot exceed ${maxLength} characters.`);
+  } else {
+    descriptionField.setCustomValidity('');
+  }
+});
+</script>
+
+<!-- Add these lines in the head section of your HTML -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<!-- Add these lines before the closing body tag of your HTML -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6sDR/U8Z+M+Cr5L5fv7G89iSdGd76hddOu2z1" crossorigin="anonymous"></script>
+
+{% endblock body %}
+{% endblock content %}

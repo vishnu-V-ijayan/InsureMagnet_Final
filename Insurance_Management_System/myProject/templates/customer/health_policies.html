@@ -1,0 +1,42 @@
+{% extends 'customer_base.html' %}
+
+{% block body %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Agent</th>
+            <th>Health Plan</th>
+            <th>Number of Persons Covered</th>
+            <th>Policy Amount</th>
+            <th>Application Date</th>
+            <th>Policy End Date</th>
+            <th>Approval Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for policy in policies %}
+        <tr>
+            <td>{{ policy.customer }}</td>
+            <td>{{ policy.agent }}</td>
+            <td>{{ policy.health_plan }}</td>
+            <td>{{ policy.npersons }}</td>
+            <td>{{ policy.amount }}</td>
+            <td>{{ policy.appldate }}</td>
+            <td>{{ policy.penddate }}</td>
+            <td>{{ policy.approval|yesno:"Approved,Not Approved" }}</td>
+            <td>
+                {% if policy.penddate < today %}
+                <a href="{% url 'renew_policy_health0' policy.id %}" class="submit-button">Renew</a>
+
+
+                {% else %}
+                    Already renewed
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

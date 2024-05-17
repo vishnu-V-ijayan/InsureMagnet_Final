@@ -1,0 +1,252 @@
+{% extends "guest.html" %}
+
+{% block style %}
+<style>
+body {
+  font-family: Arial, sans-serif;
+}
+
+.container1 {
+  width: 35%;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 25px;
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.error {
+  color: red;
+  font-size: 0.8em;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  background-color: blue;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<body>
+    <div class="container1">
+        <h2 class="text-center">Customer Registration Form</h2>
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        <form action="{% url 'signup' %}" method="post" id="signup-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="first_name">First Name:</label>
+                <input type="text" class="form-control" id="first_name" name="fname" placeholder="Enter first name">
+                <div class="text-danger" id="first_name_error"></div>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name:</label>
+                <input type="text" class="form-control" id="last_name" name="lname" placeholder="Enter last name">
+                <div class="text-danger" id="last_name_error"></div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+              <div class="text-danger" id="email_error"></div>
+          </div>
+          <div class="form-group">
+              <label for="phone">Phone Number:</label>
+              <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone number">
+              <div class="text-danger" id="phone_error"></div>
+          </div>
+          <div class="form-group">
+              <label for="address">Address:</label>
+              <textarea class="form-control" id="address" name="address" placeholder="Enter address"></textarea>
+              <div class="text-danger" id="address_error"></div>
+          </div>
+          <div class="form-group">
+              <label for="aadhaar_number">Aadhaar Number:</label>
+              <input type="text" class="form-control" id="aadhaar_number" name="aadhaar_number" placeholder="Enter Aadhaar number">
+              <div class="text-danger" id="aadhaar_number_error"></div>
+          </div>
+          <div class="form-group">
+              <label for="profile_picture">Profile Picture:</label>
+              <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept=".png, .jpg, .jpeg, .gif">
+              <div class="text-danger" id="profile_picture_error"></div>
+          </div>
+          <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+              <div class="text-danger" id="password_error"></div>
+          </div>
+          <div class="form-group">
+              <label for="confirm_password">Confirm Password:</label>
+              <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm password">
+              <div class="text-danger" id="confirm_password_error"></div>
+          </div>
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+        </form>
+        <p class="text-center mt-3">Already registered? <a href="{% url 'handlelogin' %}">Sign In</a></p>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          var firstName = document.getElementById("first_name");
+          var lastName = document.getElementById("last_name");
+          var email = document.getElementById("email");
+          var phone = document.getElementById("phone");
+          var aadhaarNumber = document.getElementById("aadhaar_number");
+          var address = document.getElementById("address");
+          var password = document.getElementById("password");
+          var confirmPassword = document.getElementById("confirm_password");
+          var profilePicture = document.getElementById("profile_picture");
+      
+          var firstNameError = document.getElementById("first_name_error");
+          var lastNameError = document.getElementById("last_name_error");
+          var emailError = document.getElementById("email_error");
+          var phoneError = document.getElementById("phone_error");
+          var aadhaarError = document.getElementById("aadhaar_number_error");
+          var addressError = document.getElementById("address_error");
+          var passwordError = document.getElementById("password_error");
+          var confirmPasswordError = document.getElementById("confirm_password_error");
+          var profilePictureError = document.getElementById("profile_picture_error");
+      
+          function displayErrorMessage(fieldElement, errorElement, message) {
+              fieldElement.classList.add("is-invalid");
+              errorElement.textContent = message;
+          }
+      
+          function clearErrorMessage(fieldElement, errorElement) {
+              fieldElement.classList.remove("is-invalid");
+              errorElement.textContent = "";
+          }
+      
+          firstName.addEventListener("input", function () {
+              clearErrorMessage(firstName, firstNameError);
+              if (firstName.value.trim() === "") {
+                  displayErrorMessage(firstName, firstNameError, "First name cannot be empty.");
+              } else if (firstName.value.includes(" ")) {
+                  displayErrorMessage(firstName, firstNameError, "First name cannot contain spaces.");
+              } else if (!/^[A-Za-z]+$/.test(firstName.value)) {
+                  displayErrorMessage(firstName, firstNameError, "First name must contain only characters.");
+              }
+          });
+      
+          lastName.addEventListener("input", function () {
+              clearErrorMessage(lastName, lastNameError);
+              if (lastName.value.trim() === "") {
+                  displayErrorMessage(lastName, lastNameError, "Last name cannot be empty.");
+              } else if (!/^[A-Za-z]+$/.test(lastName.value)) {
+                  displayErrorMessage(lastName, lastNameError, "Last name must contain only characters.");
+              }
+          });
+      
+          email.addEventListener("input", function () {
+              clearErrorMessage(email, emailError);
+              const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+              const emailValue = email.value.trim();
+      
+              if (emailValue === "") {
+                  displayErrorMessage(email, emailError, "Email cannot be empty.");
+              } else if (!emailRegex.test(emailValue)) {
+                  displayErrorMessage(email, emailError, "Invalid email format.");
+              }
+          });
+      
+          phone.addEventListener("input", function () {
+              clearErrorMessage(phone, phoneError);
+              const phoneRegex = /^[6789]\d{9}$/;
+      
+              if (phone.value.trim() === "") {
+                  displayErrorMessage(phone, phoneError, "Phone number cannot be empty.");
+              } else if (!phoneRegex.test(phone.value)) {
+                  displayErrorMessage(phone, phoneError, "Invalid phone number. Must be 10 digits starting with 6, 7, 8, or 9.");
+              }
+          });
+      
+          aadhaarNumber.addEventListener("input", function () {
+              clearErrorMessage(aadhaarNumber, aadhaarError);
+              const aadhaarRegex = /^[1-9]\d{11}$/;
+      
+              if (aadhaarNumber.value.trim() === "") {
+                  displayErrorMessage(aadhaarNumber, aadhaarError, "Aadhaar number cannot be empty.");
+              } else if (!aadhaarRegex.test(aadhaarNumber.value)) {
+                  displayErrorMessage(aadhaarNumber, aadhaarError, "Invalid Aadhaar number. Must be 12 digits and not start with 0.");
+              }
+          });
+      
+          address.addEventListener("input", function () {
+              clearErrorMessage(address, addressError);
+              if (address.value.trim() === "") {
+                  displayErrorMessage(address, addressError, "Address cannot be empty.");
+              }
+          });
+      
+          password.addEventListener("input", function () {
+              clearErrorMessage(password, passwordError);
+              if (password.value.length < 8) {
+                  displayErrorMessage(password, passwordError, "Password must be at least 8 characters long.");
+              } else if (!/[A-Z]/.test(password.value) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\]/.test(password.value) || /\s/.test(password.value)) {
+                  displayErrorMessage(password, passwordError, "Password must contain at least one uppercase letter, one special character, and no spaces.");
+              }
+          });
+      
+          confirmPassword.addEventListener("input", function () {
+              clearErrorMessage(confirmPassword, confirmPasswordError);
+              if (confirmPassword.value !== password.value) {
+                  displayErrorMessage(confirmPassword, confirmPasswordError, "Passwords do not match.");
+              }
+          });
+      
+          profilePicture.addEventListener("change", function () {
+              clearErrorMessage(profilePicture, profilePictureError);
+              const file = profilePicture.files[0];
+              const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+      
+              if (!allowedExtensions.exec(file.name)) {
+                  displayErrorMessage(profilePicture, profilePictureError, "Invalid file type. Only JPG, JPEG, PNG, GIF are allowed.");
+              }
+          });
+      
+          document.getElementById("signup-form").addEventListener("submit", function (e) {
+              // Prevent form submission if there are errors
+              var errorMessages = [firstNameError, lastNameError, emailError, phoneError, aadhaarError, addressError, passwordError, confirmPasswordError, profilePictureError];
+              var isValid = errorMessages.every(function (element) { return element.textContent === ""; });
+      
+              if (!isValid) {
+                  e.preventDefault();
+                  alert("Please correct the errors in the form.");
+              }
+          });
+      });
+      
+      </script>
+      
+</body>
+{% endblock %}

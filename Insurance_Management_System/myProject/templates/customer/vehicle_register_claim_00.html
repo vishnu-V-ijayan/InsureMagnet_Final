@@ -1,0 +1,74 @@
+{% extends "customer_base.html" %}
+
+<!-- customer/vehicle_register_claim_00.html -->
+{% load static %}
+
+{% block style %}
+<style>
+    .table-responsive {
+        margin: 20px 0;
+    }
+    
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #dee2e6;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #28a745; /* Green instead of blue */
+        border-color: #28a745;
+    }
+    
+    .btn-primary:hover {
+        background-color: #218838; /* Darker shade for hover */
+        border-color: #1e7e34;
+    }
+
+    @media (max-width: 576px) {
+        .table-responsive {
+            border: 0;
+            overflow-x: auto; /* Enable scrolling on small devices */
+        }
+    }
+    
+</style>
+{% endblock style %}
+{% block body %}
+<h1>Vehicle Insurance Policies</h1>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Policy ID</th>
+                <th>Plan</th>
+                <th>Amount</th>
+                <th>End Date</th>
+                <th>Action</th> <!-- Added heading for actions -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for policy in policies %}
+            <tr>
+                <td>{{ policy.id }}</td>
+                <td>{{ policy.vehicle_plan.PType }}</td>
+                <td>{{ policy.policy_amount }}</td>
+                <td>{{ policy.policy_end_date }}</td>
+                <td>
+                    <a href="{% url 'vehicle_register_claim_01' policy.id %}" class="btn btn-primary">Details</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock body %}

@@ -1,0 +1,47 @@
+{% extends "customer_base.html" %}
+
+{% block style %}
+    <style>
+        .container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .left, .right {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+{% endblock style %}
+{% block body %}
+<body>
+    <div class="container">
+        <div class="left">
+            <h2>Policy Details</h2>
+            <p><strong>Policy No:</strong> {{ policy.id }}</p>
+            <p><strong>Health ID:</strong> {{ policy.health_plan.id }}</p>
+            <p><strong>Office ID:</strong> OFF{{ policy.office_id }}</p>
+            <p><strong>Policy Amount:</strong> {{ policy.amount }}</p>
+            <p><strong>Policy From Date:</strong> {{ policy.appdate }}</p>
+            <p><strong>Policy To Date:</strong> {{ policy.penddate }}</p>
+        </div>
+        <div class="right">
+            <h2>Claim Details</h2>
+            <p><strong>Claim Amount:</strong> {{ claim.claim_amount }}</p>
+            <p><strong>Account Number:</strong> {{ claim.account_number }}</p>
+            <p><strong>Bank Name:</strong> {{ claim.bank_name }}</p>
+            <p><strong>IFSC Code:</strong> {{ claim.ifsc_code }}</p>
+            <p><strong>Claim Date:</strong> {{ claim.claim_date }}</p>
+            <p><strong>Reports:</strong> {{ claim.reports }}</p>
+        </div>
+    </div>
+</body>
+{% endblock body %}

@@ -1,0 +1,260 @@
+{% extends "customer_base.html" %}
+{% block style %}
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            height: 100%;
+        }
+        .grid-item {
+            padding: 20px;
+        }
+        .form-container, .policy-details, .member-details {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 10px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+{% endblock style %}
+{% block body %}
+<body>
+    <div class="grid-container">
+        <div class="grid-item policy-details">
+            <strong>Plan Details</strong>
+            <table>
+                <tr><td>Plan ID</td><td>{{ plan.id }}</td></tr>
+                <tr><td>Plan Type</td><td>{{ plan.ptype }}</td></tr>
+                <tr><td>Yearly Premium</td><td>{{ plan.ypremium }}</td></tr>
+                <tr><td>Increment %</td><td>{{ plan.incper }}</td></tr>
+                <tr><td>Max Amount</td><td>{{ plan.maxamt }}</td></tr>
+                <tr><td>Specification</td><td>{{ plan.specification }}</td></tr>
+                <tr><td>Upto Age</td><td>{{ plan.uptoage }}</td></tr>
+            </table>
+        </div>
+        <div class="grid-item" id="formContainer">
+            <!-- Forms will be inserted here dynamically -->
+        </div>
+        <div class="grid-item member-details">
+            <strong>Registered Members</strong>
+            <div id="membersList">
+                <!-- Member details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var numberOfMembers = {{ number_of_members }};
+        let currentMember = 1;
+
+        function validateForm(formId) {
+            var name = document.getElementById('name' + formId).value;
+            if (name === "") {
+                alert("Name must be filled out");
+                return false;
+            }
+            return true;
+        }
+
+        function addForm(memberNumber) {
+            const container = document.getElementById('formContainer');
+            const formHTML = `
+                <div class="form-container" id="form${memberNumber}" style="display: none;">
+                    <form onsubmit="handleFormSubmit(event, ${memberNumber})" enctype="multipart/form-data">
+                        <table>
+                            <tr>
+                                <td>MNo</td>
+                                <td>${memberNumber}</td>
+                            </tr>
+                            <tr>
+                                <td>Name</td>
+                                <td><input type="text" id="name${memberNumber}" name="name" required></td>
+                            </tr>
+                            <tr>
+                                <td>Date of Birth</td>
+                                <td><input type="date" id="dob${memberNumber}" name="dob" required></td>
+                            </tr>
+                            <tr>
+                                <td>Gender</td>
+                                <td>
+                                    <select id="gender${memberNumber}" name="gender" required>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                        <option value="O">Other</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Weight (kg)</td>
+                                <td><input type="number" id="weight${memberNumber}" name="weight" step="0.01" required></td>
+                            </tr>
+                            <tr>
+                                <td>Height (cm)</td>
+                                <td><input type="number" id="height${memberNumber}" name="height" step="0.01" required></td>
+                            </tr>
+                            <tr>
+                                <td>Photo</td>
+                                <td><input type="file" id="photo${memberNumber}" name="photo" accept="image/*"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type="submit" value="Submit"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            `;
+            container.innerHTML += formHTML;
+        }
+        
+        async function handleFormSubmit(e, memberNumber) {
+            e.preventDefault();
+            if (!validateForm(memberNumber)) return;
+        
+            const form = document.getElementById('form' + memberNumber);
+            const formData = new FormData(form.querySelector('form'));
+            
+            try {
+                const response = await sendFormData(formData);
+                console.log(response); // Process server response
+                form.style.display = 'none'; // Hide current form
+                updateMemberList(memberNumber, formData); // Update list of members
+        
+                if (memberNumber < numberOfMembers) {
+                    currentMember++;
+                    document.getElementById(`form${currentMember}`).style.display = 'block'; // Show the next form
+                } else {
+                    // Redirect to another page after the last member is added
+                    window.location.href = "{% url 'register_healthpolicy03' plan_id=plan.id %}";
+                }
+            } catch (error) {
+                alert('Failed to submit form: ' + error.message);
+            }
+        }
+        
+        window.onload = () => {
+            let numberOfMembers = {{ number_of_members|default:"1" }};
+            for (let i = 1; i <= numberOfMembers; i++) {
+                addForm(i);
+            }
+            if (numberOfMembers > 0) {
+                document.getElementById('form1').style.display = 'block'; // Display the first form
+            }
+        };
+        
+
+        function updateMemberList(memberNumber, formData) {
+            const listContainer = document.getElementById('membersList');
+            const name = formData.get('name');
+            const dob = formData.get('dob');
+            const gender = formData.get('gender');
+            const weight = formData.get('weight');
+            const height = formData.get('height');
+            const photoFile = formData.get('photo');
+            const photoSrc = URL.createObjectURL(photoFile);
+        
+            const listHTML = `
+                <div>
+                    <strong>Member ${memberNumber}:</strong>
+                    <table style="width: 100%; margin-top: 10px;">
+                        <tr>
+                            <td>Name:</td>
+                            <td>${name}</td>
+                        </tr>
+                        <tr>
+                            <td>Date of Birth:</td>
+                            <td>${dob}</td>
+                        </tr>
+                        <tr>
+                            <td>Gender:</td>
+                            <td>${gender}</td>
+                        </tr>
+                        <tr>
+                            <td>Weight:</td>
+                            <td>${weight} kg</td>
+                        </tr>
+                        <tr>
+                            <td>Height:</td>
+                            <td>${height} cm</td>
+                        </tr>
+                        <tr>
+                            <td>Photo:</td>
+                            <td><img src="${photoSrc}" alt="Member Photo" style="width: 100px; height: auto;"></td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+        
+            listContainer.innerHTML += listHTML;
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        
+
+        async function sendFormData(formData) {
+            const csrfToken = getCookie('csrftoken');
+            const response = await fetch('/submit/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        }
+        
+
+        
+    </script>
+</body>
+{% endblock body %}
+</html>

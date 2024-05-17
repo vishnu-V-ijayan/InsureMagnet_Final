@@ -1,0 +1,52 @@
+<!-- base_map.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Find Agents</title>
+    <!-- Include Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" integrity="...">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js" integrity="..."></script>
+</head>
+<body>
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html> 
+
+{% extends 'base_map.html' %}
+{% block content %}
+  <h2>Locate Our Agents</h2>
+  <div id="map" style="height: 650px;"></div>
+
+  <script>
+    var mymap = L.map('map').setView([10.8505, 76.2711], 7); // Adjust the initial view as needed
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(mymap);
+
+    {% for agent in agents %}
+      var lat = "{{ agent.latitude }}";
+      var lon = "{{ agent.longitude }}";
+      var name = "{{ agent.name|escapejs }}";
+      var email = "{{ agent.user.email|escapejs }}"; // Assuming user model has an email
+      var phone = "{{ agent.phone|escapejs }}";/
+      
+      var redIcon = new L.Icon({
+        iconUrl: 'https://path/to/red-icon.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+      });
+      
+
+      if (lat && lon) {
+        var marker = L.marker([lat, lon], {icon: redIcon}).addTo(mymap);
+        marker.bindPopup("Name: " + name + "<br>Email: " + email + "<br>Phone: " + phone);
+      }
+    {% endfor %}
+  </script>
+{% endblock %}

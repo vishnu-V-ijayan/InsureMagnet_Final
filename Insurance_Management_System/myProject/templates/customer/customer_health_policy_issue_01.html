@@ -1,0 +1,132 @@
+{% extends "customer_base.html" %}
+{% block style %}
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin: 20px auto;
+        width: 90%; /* Adjusted for better responsiveness */
+        max-width: 1200px; /* Ensures the container doesn't get too wide on larger screens */
+    }
+    .responsive-table {
+        overflow-x: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    td {
+        background-color: #fff;
+    }
+    input[type="text"], select {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    input[type="submit"] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+    @media screen and (max-width: 600px) {
+        table, .responsive-table {
+            width: 100%;
+            display: block;
+            overflow-x: scroll; /* Ensures table is scrollable horizontally on small devices */
+        }
+        .container {
+            margin: 10px;
+            padding: 10px;
+        }
+    }
+</style>
+{% endblock style %}
+{% block body %}
+
+<div class="container">
+    <h2>New Health Policy Registration</h2>
+    <div class="responsive-table">
+        <table>
+            <tr>
+                <td width="33%" valign="top">
+                    <strong>Plan Details</strong>
+                    <table>
+                        <tr><td>Plan ID</td><td>{{ plan.id }}</td></tr>
+                        <tr><td>Plan Type</td><td>{{ plan.ptype }}</td></tr>
+                        <tr><td>Yearly Premium</td><td>{{ plan.ypremium }}</td></tr>
+                        <tr><td>Increment %</td><td>{{ plan.incper }}</td></tr>
+                        <tr><td>Max Amount</td><td>{{ plan.maxamt }}</td></tr>
+                        <tr><td>Specification</td><td>{{ plan.specification }}</td></tr>
+                        <tr><td>Upto Age</td><td>{{ plan.uptoage }}</td></tr>
+                    </table>
+                </td>
+                <td width="33%" valign="top">
+                    <form method="post" action="{% url 'register_healthpolicy01' plan.pk %}">
+                        {% csrf_token %}
+                        <table>
+                            <tr><td>Num Of Persons</td><td>    <input type="text" name="number_of_members"> <!-- Name corrected from 'num_persons' -->
+                            </td></tr>
+                            <tr>
+                                <td>Select Office ID</td>
+                                <td>
+                                    <select name="office_id">
+                                        {% for office in offices %}
+                                            <option value="{{ office.officeid }}">{{ office.officeid }} - {{ office.address }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr><td></td><td><input type="submit" value="Continue >>"></td></tr>
+                        </table>
+                    </form>
+                    
+                </td>
+                <td width="33%" valign="top">
+                    <p>Office List</p>
+                    <table>
+                        <tr><td>Office ID</td><td>Place</td><td>Location</td></tr>
+                        {% for office in offices %}
+                        <tr>
+                            <td>{{ office.officeid }}</td>
+                            <td>{{ office.place }}</td>
+                            <td>{{ office.location }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+{% endblock body %}

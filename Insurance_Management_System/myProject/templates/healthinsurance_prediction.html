@@ -1,0 +1,158 @@
+{% extends 'customer/customerbase.html' %}
+{% block content %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Members Form</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .container {
+        display: flex;
+        height: 100vh;
+    }
+    .block {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #ddd; /* Just to define the separation clearly */
+    }
+    #formBlock {
+        background-color: #f2f2f2;
+    }
+    form {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    input, select {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    input[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    input[type="submit"]:hover {
+        background-color: #008CBA; /* Blue color for hover */
+    }
+    .error {
+        color: red;
+        margin-top: -10px;
+        margin-bottom: 10px;
+        font-size: 0.8em;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="block" id="leftBlock">Left Block</div>
+    <div class="block" id="formBlock">
+        <form id="hMembersForm" method="POST" action="{% url 'healthinsurance_prediction' %}">
+          {% csrf_token %}
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required pattern="[A-Za-z ]+" title="Name must contain only letters and spaces.">
+
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+            </select>
+
+            <label for="weight">Weight (kg):</label>
+            <input type="number" id="weight" name="weight" min="1" step="0.01" required>
+
+            <label for="height">Height (cm):</label>
+            <input type="number" id="height" name="height" min="1" step="0.01" required>
+
+            <label for="children">Children:</label>
+            <input type="number" id="children" name="children" min="0" max="4" required>
+
+            <label for="smoker">Smoker:</label>
+            <select id="smoker" name="smoker" required>
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </select>
+              
+            <label for="region">Region:</label>
+            <select id="region" name="region" required>
+                <option value="southwest">Southwest</option>
+                <option value="southeast">Southeast</option>
+                <option value="northwest">Northwest</option>
+                <option value="northeast">Northeast</option>
+            </select>
+            <br>
+            {% if output %}
+            <h2>Premium amount : {{output}}</h2>
+            {% endif %}
+            </br>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div class="block" id="rightBlock">Right Block</div>
+</div>
+
+<script>
+document.getElementById('hMembersForm').addEventListener('submit', function(event) {
+    var formValid = true;
+
+    // Validate date of birth
+    var dobInput = document.getElementById('dob');
+    var dobDate = new Date(dobInput.value);
+    var today = new Date();
+    if (dobDate >= today) {
+        alert('Date of birth must be in the past.');
+        formValid = false;
+    }
+
+    // Validate weight
+    var weightInput = document.getElementById('weight');
+    if (parseFloat(weightInput.value) <= 0) {
+        alert('Weight must be greater than zero.');
+        formValid = false;
+    }
+
+    // Validate height
+    var heightInput = document.getElementById('height');
+    if (parseFloat(heightInput.value) <= 0) {
+        alert('Height must be greater than zero.');
+        formValid = false;
+    }
+
+    // Check the children count
+    var childrenInput = document.getElementById('children');
+    if (parseInt(childrenInput.value) < 0 || parseInt(childrenInput.value) > 4) {
+        alert('Number of children must be between 0 and 4.');
+        formValid = false;
+    }
+
+    if (!formValid) {
+        event.preventDefault();
+    }
+});
+</script>
+</body>
+</html>
+
+{% endblock content %}

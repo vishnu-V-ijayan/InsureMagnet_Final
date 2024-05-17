@@ -1,0 +1,44 @@
+{% extends "customer_base.html" %}
+{% block style %}
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
+    </style>
+{% endblock style %}
+{% block body %}
+<body>
+    <h2>My Health Policies</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Policy ID</th>
+                <th>Health Plan</th>
+                <th>Number of Persons Covered</th>
+                <th>Policy Amount</th>
+                <th>Application Date</th>
+                <th>Policy End Date</th>
+                <th>Approval Status</th>
+                <th>Approval Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for policy in health_policies %}
+            <tr>
+                <td>{{ policy.id }}</td>
+                <td>{{ policy.health_plan }}</td>
+                <td>{{ policy.npersons }}</td>
+                <td>{{ policy.amount }}</td>
+                <td>{{ policy.appldate }}</td>
+                <td>{{ policy.penddate }}</td>
+                <td>{{ policy.approval }}</td>
+                <td>{{ policy.appdate }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock body %}

@@ -1,0 +1,14 @@
+{% extends "customer_base.html" %}
+
+{% block body %}
+    <h1>Policy Issued Successfully</h1>
+    <p>Your health policy has been issued successfully. Thank you for choosing our insurance company.</p>
+    <p>Policy details:</p>
+    <ul>
+        <li>Policy Number: {{ policy_number }}</li>
+        <li>Policy Holder: {{ policy_holder }}</li>
+        <li>Start Date: {{ start_date }}</li>
+        <li>End Date: {{ end_date }}</li>
+        <li>Premium Amount: {{ premium_amount }}</li>
+    </ul>
+{% endblock body%}

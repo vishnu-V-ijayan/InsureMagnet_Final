@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Claim Approval</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { display: flex; flex-wrap: wrap; justify-content: space-between; }
+        .division { flex: 1 1 300px; padding: 10px; box-sizing: border-box; margin: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        input, textarea, button { width: 100%; margin-top: 10px; }
+        button:hover { background-color: #f1f1f1; }
+        .form-section { display: block; }
+        .radio-inline { display: inline-block; margin-right: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="division">
+        <table>
+            <tr><th colspan="2"><h3>Customer Details</h3></th></tr>
+            <tr><td>Name:</td><td>{{ customer.first_name }} {{ customer.last_name }}</td></tr>
+            <tr><td>Phone:</td><td>{{ customer.phone }}</td></tr>
+            <tr><td>Address:</td><td>{{ customer.address }}</td></tr>
+        </table>
+        <table>
+            <tr><th colspan="2"><h3>Claim Details</h3></th></tr>
+            <tr><td>Amount:</td><td>{{ claim.claim_amount }}</td></tr>
+            <tr><td>Date:</td><td>{{ claim.claim_date }}</td></tr>
+            <tr><td colspan="2"><button onclick="downloadReport()">Download Report</button></td></tr>
+        </table>
+    </div>
+    <div class="division">
+        <table>
+            <tr><th colspan="2"><h3>Vehicle Details</h3></th></tr>
+            <tr><td>Number:</td><td>{{ vehicle_policy.vehicle_number }}</td></tr>
+            <tr><td>Value:</td><td>{{ vehicle_policy.vehicle_value }}</td></tr>
+            <!-- Additional vehicle details can be added here -->
+        </table>
+    </div>
+    <div class="division">
+        <form method="post" action="{% url 'staff_vehicle_claim_approval_01' claim_request_id=claim.id %}">
+            {% csrf_token %}
+            <table>
+                <tr><th colspan="2"><h3>Approval</h3></th></tr>
+                <tr>
+                    <td>Approval Status:</td>
+                    <td>
+                        <label class="radio-inline"><input type="radio" name="approval_status" value="Approved" onclick="handleRadioClick(true)"> Approve</label>
+                        <label class="radio-inline"><input type="radio" name="approval_status" value="Denied" onclick="handleRadioClick(false)"> Reject</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Approved Amount:</td>
+                    <td><input type="number" name="approved_amount" id="approved_amount" placeholder="Approved Amount" disabled></td>
+                </tr>
+                <tr>
+                    <td>Comment:</td>
+                    <td><textarea name="comment" placeholder="Comment"></textarea></td>
+                </tr>
+                <tr><td colspan="2"><button type="submit">Submit</button></td></tr>
+            </table>
+        </form>
+    </div>
+</div>
+<script>
+    function handleRadioClick(isApprove) {
+        document.getElementById('approved_amount').disabled = !isApprove;
+    }
+
+    function downloadReport() {
+        window.location.href = ''; // Adjust this URL to your Django URL name for downloading reports
+    }
+</script>
+</body>
+</html>

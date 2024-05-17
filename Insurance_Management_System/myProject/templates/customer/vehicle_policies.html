@@ -1,0 +1,36 @@
+{% extends 'customer_base.html' %}
+{% block body %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Policy ID</th>
+            <th>Customer</th>
+            <th>Vehicle Number</th>
+            <th>Policy Amount</th>
+            <th>Policy End Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for policy in policies %}
+        <tr>
+            <td>{{ policy }}</td>
+            <td>{{ policy.customer }}</td>
+            <td>{{ policy.vehicle_number }}</td>
+            <td>{{ policy.policy_amount }}</td>
+            <td>{{ policy.policy_end_date }}</td>
+            <td>
+                {% if policy.policy_end_date < today %}
+                    
+                    <a href="{% url 'renew_policy' policy.id %}" class="submit-button">Renew</a>
+                {% else %}
+                    Already Renewed
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

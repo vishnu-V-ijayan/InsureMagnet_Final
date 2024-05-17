@@ -1,0 +1,57 @@
+{% extends "customer_base.html" %}
+
+<!-- customer/vehicle_register_claim_02.html -->
+{% block style %}
+    <style>
+        .container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .left, .right {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+
+{% endblock style %}
+{% block body %}
+<body>
+    <div class="container">
+        <div class="left">
+                <h2>Policy Details</h2>
+                <p><strong>Policy No:</strong> {{ policy.id }}</p>
+                <p><strong>Vehicle Plan ID:</strong> {{ policy.vehicle_plan.id }}</p>
+                <p><strong>Office ID:</strong> OFF{{ policy.office_id }}</p>
+                <p><strong>Policy Amount:</strong> {{ policy.policy_amount }}</p>
+                <p><strong>Policy Start Date:</strong> {{ policy.policy_date }}</p>
+                <p><strong>Policy End Date:</strong> {{ policy.policy_end_date }}</p>
+                <p><strong>Customer:</strong> {{ policy.customer.first_name }}</p> <!-- Assuming Customer model has a 'name' field -->
+                {% comment %} <p><strong>Agent:</strong> {{ policy.agent.name if policy.agent else 'No agent assigned' }}</p> <!-- Assuming Agent model has a 'name' field --> {% endcomment %}
+                <p><strong>Vehicle Number:</strong> {{ policy.vehicle_number }}</p>
+                <p><strong>Engine Number:</strong> {{ policy.engine_number }}</p>
+                <p><strong>Chassis Number:</strong> {{ policy.chassis_number }}</p>
+                <p><strong>Vehicle Type:</strong> {{ policy.vehicle_type }}</p>
+                <p><strong>Manufacture Year:</strong> {{ policy.manufacture_year }}</p>
+                <p><strong>Vehicle Value:</strong> {{ policy.vehicle_value }}</p>
+        </div>
+        <div class="right">
+            <h2>Claim Details</h2>
+            <p><strong>Claim Amount:</strong> {{ claim.claim_amount }}</p>
+            <p><strong>Account Number:</strong> {{ claim.account_number }}</p>
+            <p><strong>Bank Name:</strong> {{ claim.bank_name }}</p>
+            <p><strong>IFSC Code:</strong> {{ claim.ifsc_code }}</p>
+            <p><strong>Claim Date:</strong> {{ claim.claim_date }}</p>
+            <p><strong>Reports:</strong> {{ claim.reports }}</p>
+        </div>
+    </div>
+</body>
+{% endblock body %}

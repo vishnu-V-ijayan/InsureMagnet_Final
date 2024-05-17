@@ -1,0 +1,44 @@
+{% extends "customer_base.html" %}
+{% block style %}
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
+    </style>
+{% endblock style %}
+{% block body %}
+<body>
+    <h2>My Vehicle Policies</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Policy ID</th>
+                <th>Vehicle Number</th>
+                <th>Vehicle Value</th>
+                <th>Vehicle Plan</th>
+                <th>Vehicle Type</th>
+                <th>Policy Amount</th>
+                <th>Policy Date</th>
+                <th>Policy End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for policy in vehicle_policies %}
+            <tr>
+                <td>{{ policy.id }}</td>
+                <td>{{ policy.vehicle_number }}</td>
+                <td>{{ policy.vehicle_value }}</td>
+                <td>{{ policy.vehicle_plan }}</td>
+                <td>{{ policy.vehicle_type }}</td>
+                <td>{{ policy.policy_amount }}</td>
+                <td>{{ policy.policy_date }}</td>
+                <td>{{ policy.policy_end_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock body %}
